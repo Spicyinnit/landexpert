@@ -1,0 +1,549 @@
+// @ts-nocheck
+import React, { useEffect, useState } from 'react';
+
+const heroImage = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'><defs><linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%23f8e7ba'/><stop offset='55%' stop-color='%23ecd39a'/><stop offset='100%' stop-color='%23d2b48c'/></linearGradient><linearGradient id='land' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%23d9bc8a'/><stop offset='100%' stop-color='%23c29a67'/></linearGradient></defs><rect width='1600' height='900' fill='url(%23sky)'/><rect y='260' width='1600' height='640' fill='url(%23land)'/><circle cx='90' cy='105' r='70' fill='%23fbbf24' fill-opacity='0.55'/></svg>";
+const formImage = 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80';
+
+const translations = {
+  tr: {
+    lang: 'TR',
+    nav: ['Operasyonlarımız', 'Neden Özbekistan?', 'Tahsis Süreci', 'İletişim'],
+    headerCta: 'Ücretsiz Saha Analizi İste',
+    heroBadge: 'Taşkent Merkezli Sanayi Parsel Operasyonları',
+    heroTitle1: 'Özbekistan Sanayisinde',
+    heroHighlight: '“Stratejik Parsel”',
+    heroTitle2: 'Dönemi.',
+    heroText:
+      'Doğru konumu seçiyor, altyapıyı doğruluyor ve resmi tahsis süreçlerini Taşkent merkezli operasyonumuzla yönetiyoruz.',
+    heroButton: 'Operasyonlarımızı İncele',
+    panelTitle: 'Operasyon Paneli',
+    panelHeading: 'Saha Ön Değerlendirme',
+    active: 'Aktif',
+    sectorFit: 'Sektör Uyumu',
+    sectorFitValue: 'Tekstil / Gıda / Kimya / Ağır Sanayi',
+    energyCheck: 'Enerji Kontrolü',
+    gasCapacity: 'Gaz Kapasitesi',
+    output: 'Operasyon Çıktısı',
+    outputValue: 'Teknik rapor + resmi tahsis süreci yönetimi + saha teslimi',
+    expertiseTag: 'Uzmanlık Alanları',
+    expertiseTitle: 'Sadece arazi bulmuyoruz; teknik, hukuki ve operasyonel riski birlikte yönetiyoruz.',
+    expertiseText: 'Her yatırım sahası önerisi; sektör uyumu, gerçek altyapı kapasitesi ve resmi süreç yönetimiyle birlikte değerlendirilir.',
+    cards: [
+      {
+        icon: '📍',
+        title: 'Parsel Tespiti & Analiz',
+        text: 'Sektörünüze en uygun teşvik bölgesini belirliyor; eğim, zemin yapısı ve mülkiyet temizliğini birlikte inceliyoruz.',
+        items: ['Sektör uyumu', 'Zemin ve erişim analizi', 'Hukuki temizleme kontrolü'],
+      },
+      {
+        icon: '⚡',
+        title: 'Altyapı & Enerji Validasyonu',
+        text: 'Kağıt üzerindeki değil, sahadaki gerçek kapasiteyi doğruluyoruz.',
+        items: ['MW elektrik kontrolü', 'Gaz ve su teyidi', 'Yerinde bağlantı kontrolü'],
+      },
+      {
+        icon: '📜',
+        title: 'Resmi Tahsis Operasyonu',
+        text: 'Hokimlik ve ilgili kurumlar nezdindeki süreci operasyonel olarak yönetiyoruz.',
+        items: ['Resmi süreç takibi', 'Dokümantasyon koordinasyonu', 'Tahsis ve teslim'],
+      },
+    ],
+    dataTag: 'Verilerle Özbekistan',
+    dataTitle: 'Yatırım kararını sezgiyle değil, doğrulanmış saha verisiyle güçlendiriyoruz.',
+    dataText: 'LandExpert yaklaşımı, yatırımcının en kritik sorularına sahadan doğrulanmış, operasyon odaklı yanıt üretir.',
+    rows: [
+      ['Hukuki Statü', '%100 temizlenmiş, itiraza kapalı parseller'],
+      ['Lojistik', 'Demiryolu ve ana arter erişim analizi'],
+      ['Teşvikler', 'Yatırım hacmine göre vergi muafiyeti filtresi'],
+      ['Süreç Yönetimi', 'Net operasyon takvimi'],
+    ],
+    processTag: '3 Adımda Yatırım Sahası',
+    processTitle: 'Teknik seçimden resmi teslime kadar net, izlenebilir bir akış.',
+    steps: [
+      ['01', 'Analiz', 'Yatırım profili, sektör, hektar ve enerji ihtiyacı çıkarılır.'],
+      ['02', 'Saha Seçimi', 'En uygun 3 saha raporla birlikte sunulur.'],
+      ['03', 'Resmi Teslim', 'Tahsis süreci tamamlanır ve saha teslim edilir.'],
+    ],
+    formTag: 'Tahsis Talep Formu',
+    formTitle: 'Özbekistan Yatırım Alanı Ön Analiz Formu',
+    formText: 'Basit bir iletişim formu değil; yatırım kararınız için ön teknik çerçeveyi toplayan bir başvuru paneli.',
+    formBadge: 'Resmi Tahsis Odaklı Ön Başvuru',
+    formLabels: ['Yatırımcı / Kurum İsmi', 'Hedef Sektör', 'Talep Edilen Alan (Hektar)', 'Kritik Teknik İhtiyaç', 'Mesajınız'],
+    formPlaceholders: ['Şirket veya yatırımcı adı', 'Tekstil', 'Örn: 12', 'Yüksek enerji / demiryolu / havalimanı yakınlığı', 'Yatırım hedefinizi, beklediğiniz kapasiteyi ve özel ihtiyaçlarınızı paylaşın.'],
+    sectors: ['Tekstil', 'Gıda', 'Kimya', 'Lojistik', 'Ağır Sanayi', 'Diğer'],
+    submit: 'Analiz Talebini Gönder',
+    modalTag: 'Hızlı Ön Başvuru',
+    modalTitle: 'Kısa Bilgi Bırakın',
+    modalText: 'Sadece birkaç bilgi girin, ekibimiz size uygun saha analiziyle dönüş yapsın.',
+    modalLabels: ['İsim / Şirket', 'Telefon veya E-posta', 'Hedef Sektör', 'Kısa Not'],
+    modalPlaceholders: ['Adınız veya şirket adı', 'İletişim bilginiz', 'Tekstil', "Örn: yüksek enerji ihtiyacı, Taşkent'e yakınlık, demiryolu bağlantısı"],
+    modalSubmit: 'Bilgileri Gönder',
+    footerTitle: 'Uzbekistan Industrial Land Operations',
+    footerCenter: 'Operasyon Merkezi',
+    footerLocation: 'Taşkent, Özbekistan.',
+    footerSlogan: '“Sanayi yatırımında belirsizliğe yer yok.”',
+  },
+  en: {
+    lang: 'EN',
+    nav: ['Operations', 'Why Uzbekistan?', 'Allocation Process', 'Contact'],
+    headerCta: 'Request Free Site Analysis',
+    heroBadge: 'Tashkent-Centered Industrial Land Operations',
+    heroTitle1: 'A New Era of',
+    heroHighlight: '“Strategic Parcels”',
+    heroTitle2: 'in Uzbekistan Industry.',
+    heroText:
+      'We select the right location, verify infrastructure, and manage official allocation processes through our Tashkent-based operation.',
+    heroButton: 'Explore Our Operations',
+    panelTitle: 'Operations Panel',
+    panelHeading: 'Site Pre-Evaluation',
+    active: 'Active',
+    sectorFit: 'Sector Fit',
+    sectorFitValue: 'Textile / Food / Chemical / Heavy Industry',
+    energyCheck: 'Energy Check',
+    gasCapacity: 'Gas Capacity',
+    output: 'Operational Output',
+    outputValue: 'Technical report + official allocation process management + site handover',
+    expertiseTag: 'Areas of Expertise',
+    expertiseTitle: 'We do more than find land; we manage technical, legal, and operational risk together.',
+    expertiseText: 'Every land recommendation is evaluated with sector fit, real infrastructure capacity, and official process management.',
+    cards: [
+      {
+        icon: '📍',
+        title: 'Parcel Identification & Analysis',
+        text: 'We identify the most suitable incentive zone for your sector and assess slope, soil structure, and title cleanliness together.',
+        items: ['Sector compatibility', 'Ground and access analysis', 'Legal clearance check'],
+      },
+      {
+        icon: '⚡',
+        title: 'Infrastructure & Energy Validation',
+        text: 'We verify real on-site capacity, not just what is promised on paper.',
+        items: ['MW electricity check', 'Gas and water verification', 'On-site connection control'],
+      },
+      {
+        icon: '📜',
+        title: 'Official Allocation Operation',
+        text: 'We manage the process operationally with the Hokimlik and related authorities.',
+        items: ['Official process tracking', 'Documentation coordination', 'Allocation and delivery'],
+      },
+    ],
+    dataTag: 'Uzbekistan by the Numbers',
+    dataTitle: 'We strengthen investment decisions with verified field data, not intuition.',
+    dataText: 'The LandExpert approach provides field-verified, operation-focused answers to an investor’s most critical questions.',
+    rows: [
+      ['Legal Status', '100% cleared parcels closed to future objection'],
+      ['Logistics', 'Railway and main artery access analysis'],
+      ['Incentives', 'Tax exemption filtering by investment volume'],
+      ['Process Management', 'Clear operational timeline'],
+    ],
+    processTag: 'Investment Land in 3 Steps',
+    processTitle: 'A clear and traceable flow from technical selection to official delivery.',
+    steps: [
+      ['01', 'Analysis', 'Your investment profile, sector, hectare need, and energy demand are mapped out.'],
+      ['02', 'Site Selection', 'The 3 most suitable sites are presented with a report.'],
+      ['03', 'Official Delivery', 'The allocation process is completed and the site is handed over.'],
+    ],
+    formTag: 'Allocation Request Form',
+    formTitle: 'Uzbekistan Investment Land Pre-Analysis Form',
+    formText: 'Not just a contact form, but a pre-application panel that collects the technical framework for your investment decision.',
+    formBadge: 'Official Allocation Focused Pre-Application',
+    formLabels: ['Investor / Company Name', 'Target Sector', 'Requested Area (Hectares)', 'Critical Technical Need', 'Your Message'],
+    formPlaceholders: ['Company or investor name', 'Textile', 'Ex: 12', 'High energy / railway / airport proximity', 'Share your investment target, expected capacity, and special needs.'],
+    sectors: ['Textile', 'Food', 'Chemical', 'Logistics', 'Heavy Industry', 'Other'],
+    submit: 'Send Analysis Request',
+    modalTag: 'Quick Pre-Application',
+    modalTitle: 'Leave Short Information',
+    modalText: 'Enter just a few details and our team will return with a suitable site analysis.',
+    modalLabels: ['Name / Company', 'Phone or E-mail', 'Target Sector', 'Short Note'],
+    modalPlaceholders: ['Your name or company', 'Your contact information', 'Textile', 'Ex: high energy demand, proximity to Tashkent, railway access'],
+    modalSubmit: 'Send Information',
+    footerTitle: 'Uzbekistan Industrial Land Operations',
+    footerCenter: 'Operations Center',
+    footerLocation: 'Tashkent, Uzbekistan.',
+    footerSlogan: '“There is no room for uncertainty in industrial investment.”',
+  },
+  ru: {
+    lang: 'RU',
+    nav: ['Наши операции', 'Почему Узбекистан?', 'Процесс выделения', 'Контакты'],
+    headerCta: 'Запросить бесплатный анализ участка',
+    heroBadge: 'Операции с промышленными участками из Ташкента',
+    heroTitle1: 'Эпоха',
+    heroHighlight: '«Стратегических участков»',
+    heroTitle2: 'в промышленности Узбекистана.',
+    heroText:
+      'Мы выбираем правильную локацию, проверяем инфраструктуру и управляем официальными процессами выделения через нашу ташкентскую операцию.',
+    heroButton: 'Изучить наши операции',
+    panelTitle: 'Операционная панель',
+    panelHeading: 'Предварительная оценка участка',
+    active: 'Активно',
+    sectorFit: 'Отраслевое соответствие',
+    sectorFitValue: 'Текстиль / Пищевая / Химия / Тяжёлая промышленность',
+    energyCheck: 'Проверка энергии',
+    gasCapacity: 'Газовая мощность',
+    output: 'Результат операции',
+    outputValue: 'Технический отчёт + управление официальным процессом выделения + передача участка',
+    expertiseTag: 'Наша экспертиза',
+    expertiseTitle: 'Мы не просто находим землю — мы управляем техническими, юридическими и операционными рисками вместе.',
+    expertiseText: 'Каждая рекомендация по участку оценивается с учётом отраслевого соответствия, реальной инфраструктурной мощности и официального сопровождения процесса.',
+    cards: [
+      {
+        icon: '📍',
+        title: 'Поиск и анализ участка',
+        text: 'Мы определяем наиболее подходящую льготную зону для вашей отрасли и оцениваем уклон, структуру грунта и юридическую чистоту.',
+        items: ['Отраслевое соответствие', 'Анализ грунта и доступа', 'Проверка юридической чистоты'],
+      },
+      {
+        icon: '⚡',
+        title: 'Проверка инфраструктуры и энергии',
+        text: 'Мы подтверждаем реальную мощность на месте, а не только обещания на бумаге.',
+        items: ['Проверка электроэнергии MW', 'Проверка газа и воды', 'Контроль подключений на месте'],
+      },
+      {
+        icon: '📜',
+        title: 'Операция официального выделения',
+        text: 'Мы операционно ведём процесс через хокимият и соответствующие органы.',
+        items: ['Отслеживание процесса', 'Координация документации', 'Выделение и передача'],
+      },
+    ],
+    dataTag: 'Узбекистан в цифрах',
+    dataTitle: 'Мы усиливаем инвестиционные решения проверенными полевыми данными, а не интуицией.',
+    dataText: 'Подход LandExpert даёт инвестору полевые и операционные ответы на самые важные вопросы.',
+    rows: [
+      ['Юридический статус', '100% очищенные участки без риска будущих возражений'],
+      ['Логистика', 'Анализ доступа к железной дороге и магистралям'],
+      ['Льготы', 'Фильтрация налоговых льгот по объёму инвестиций'],
+      ['Управление процессом', 'Чёткий операционный график'],
+    ],
+    processTag: 'Инвестиционный участок в 3 шага',
+    processTitle: 'Понятный и прозрачный путь от технического выбора до официальной передачи.',
+    steps: [
+      ['01', 'Анализ', 'Определяются профиль инвестиций, отрасль, потребность в гектарах и энергии.'],
+      ['02', 'Выбор участка', 'Представляются 3 наиболее подходящих участка с отчётом.'],
+      ['03', 'Официальная передача', 'Процесс выделения завершается, участок передаётся.'],
+    ],
+    formTag: 'Форма запроса выделения',
+    formTitle: 'Форма предварительного анализа инвестиционного участка в Узбекистане',
+    formText: 'Это не просто форма контакта, а панель предварительной заявки для сбора технической рамки вашего инвестиционного решения.',
+    formBadge: 'Предварительная заявка на официальное выделение',
+    formLabels: ['Имя инвестора / компании', 'Целевая отрасль', 'Требуемая площадь (гектары)', 'Критическая техническая потребность', 'Ваше сообщение'],
+    formPlaceholders: ['Название компании или инвестора', 'Текстиль', 'Напр: 12', 'Высокая энергия / железная дорога / близость к аэропорту', 'Опишите цель инвестиций, ожидаемую мощность и особые требования.'],
+    sectors: ['Текстиль', 'Пищевая', 'Химия', 'Логистика', 'Тяжёлая промышленность', 'Другое'],
+    submit: 'Отправить запрос на анализ',
+    modalTag: 'Быстрая предварительная заявка',
+    modalTitle: 'Оставьте краткую информацию',
+    modalText: 'Введите всего несколько данных, и наша команда вернётся с подходящим анализом участка.',
+    modalLabels: ['Имя / Компания', 'Телефон или E-mail', 'Целевая отрасль', 'Короткая заметка'],
+    modalPlaceholders: ['Ваше имя или компания', 'Ваши контактные данные', 'Текстиль', 'Напр: высокая потребность в энергии, близость к Ташкенту, доступ к железной дороге'],
+    modalSubmit: 'Отправить информацию',
+    footerTitle: 'Операции с промышленными участками в Узбекистане',
+    footerCenter: 'Операционный центр',
+    footerLocation: 'Ташкент, Узбекистан.',
+    footerSlogan: '«В промышленном инвестировании нет места неопределённости.»',
+  },
+  uz: {
+    lang: 'UZ',
+    nav: ['Operatsiyalarimiz', 'Nega Oʻzbekiston?', 'Ajratish jarayoni', 'Aloqa'],
+    headerCta: 'Bepul maydon tahlilini soʻrash',
+    heroBadge: 'Toshkent markazli sanoat yer operatsiyalari',
+    heroTitle1: 'Oʻzbekiston sanoatida',
+    heroHighlight: '“Strategik uchastka”',
+    heroTitle2: 'davri.',
+    heroText:
+      'Biz toʻgʻri joylashuvni tanlaymiz, infratuzilmani tekshiramiz va rasmiy ajratish jarayonlarini Toshkent markazli operatsiyamiz orqali boshqaramiz.',
+    heroButton: 'Operatsiyalarimizni ko‘rish',
+    panelTitle: 'Operatsiya paneli',
+    panelHeading: 'Maydonning dastlabki bahosi',
+    active: 'Faol',
+    sectorFit: 'Sohaga moslik',
+    sectorFitValue: 'Toʻqimachilik / Oziq-ovqat / Kimyo / Ogʻir sanoat',
+    energyCheck: 'Energiya nazorati',
+    gasCapacity: 'Gaz quvvati',
+    output: 'Operatsion natija',
+    outputValue: 'Texnik hisobot + rasmiy ajratish jarayonini boshqarish + maydon topshiruvi',
+    expertiseTag: 'Mutaxassislik yoʻnalishlari',
+    expertiseTitle: 'Biz faqat yer topmaymiz; texnik, huquqiy va operatsion xavfni birgalikda boshqaramiz.',
+    expertiseText: 'Har bir yer tavsiyasi sohaga moslik, haqiqiy infratuzilma quvvati va rasmiy jarayon boshqaruvi bilan baholanadi.',
+    cards: [
+      {
+        icon: '📍',
+        title: 'Uchastkani aniqlash va tahlil',
+        text: 'Biz sizning sohangiz uchun eng mos imtiyozli hududni aniqlaymiz va nishablik, tuproq tuzilishi hamda huquqiy tozaligini baholaymiz.',
+        items: ['Sohaga moslik', 'Tuproq va kirish tahlili', 'Huquqiy tekshiruv'],
+      },
+      {
+        icon: '⚡',
+        title: 'Infratuzilma va energiya validatsiyasi',
+        text: 'Biz qog‘ozdagi va’dalarni emas, joydagi haqiqiy quvvatni tasdiqlaymiz.',
+        items: ['MW elektr tekshiruvi', 'Gaz va suv tasdig‘i', 'Joyida ulanish nazorati'],
+      },
+      {
+        icon: '📜',
+        title: 'Rasmiy ajratish operatsiyasi',
+        text: 'Biz hokimlik va tegishli organlar bilan jarayonni operatsion tarzda boshqaramiz.',
+        items: ['Jarayon kuzatuvi', 'Hujjatlar koordinatsiyasi', 'Ajratish va topshirish'],
+      },
+    ],
+    dataTag: 'Raqamlar bilan Oʻzbekiston',
+    dataTitle: 'Biz investitsiya qarorini sezgi bilan emas, tasdiqlangan maydon maʼlumotlari bilan kuchaytiramiz.',
+    dataText: 'LandExpert yondashuvi investorga eng muhim savollar bo‘yicha joyida tasdiqlangan va operatsiyaga yo‘naltirilgan javoblarni beradi.',
+    rows: [
+      ['Huquqiy holat', '100% tozalangan, keyinchalik eʼtiroz qilinmaydigan uchastkalar'],
+      ['Logistika', 'Temir yoʻl va asosiy yoʻllarga kirish tahlili'],
+      ['Imtiyozlar', 'Investitsiya hajmiga qarab soliq imtiyozlari filtri'],
+      ['Jarayon boshqaruvi', 'Aniq operatsion jadval'],
+    ],
+    processTag: 'Investitsiya maydoni 3 qadamda',
+    processTitle: 'Texnik tanlovdan rasmiy topshiruvgacha aniq va kuzatiladigan oqim.',
+    steps: [
+      ['01', 'Tahlil', 'Investitsiya profili, soha, gektar va energiya ehtiyoji aniqlanadi.'],
+      ['02', 'Maydon tanlash', 'Eng mos 3 ta maydon hisobot bilan taqdim etiladi.'],
+      ['03', 'Rasmiy topshiruv', 'Ajratish jarayoni tugallanadi va maydon topshiriladi.'],
+    ],
+    formTag: 'Ajratish soʻrov formasi',
+    formTitle: 'Oʻzbekiston investitsiya maydoni dastlabki tahlil formasi',
+    formText: 'Bu oddiy aloqa formasi emas, balki investitsiya qaroringiz uchun texnik asoslarni yig‘uvchi dastlabki ariza panelidir.',
+    formBadge: 'Rasmiy ajratishga yoʻnaltirilgan dastlabki ariza',
+    formLabels: ['Investor / Kompaniya nomi', 'Maqsadli soha', 'Talab qilingan maydon (gektar)', 'Muhim texnik ehtiyoj', 'Xabaringiz'],
+    formPlaceholders: ['Kompaniya yoki investor nomi', 'Toʻqimachilik', 'Masalan: 12', 'Yuqori energiya / temir yoʻl / aeroport yaqinligi', 'Investitsiya maqsadi, kutilayotgan quvvat va maxsus ehtiyojlaringizni yozing.'],
+    sectors: ['Toʻqimachilik', 'Oziq-ovqat', 'Kimyo', 'Logistika', 'Ogʻir sanoat', 'Boshqa'],
+    submit: 'Tahlil soʻrovini yuborish',
+    modalTag: 'Tezkor dastlabki ariza',
+    modalTitle: 'Qisqa maʼlumot qoldiring',
+    modalText: 'Bir nechta maʼlumot kiriting, jamoamiz sizga mos maydon tahlili bilan qaytadi.',
+    modalLabels: ['Ism / Kompaniya', 'Telefon yoki E-mail', 'Maqsadli soha', 'Qisqa izoh'],
+    modalPlaceholders: ['Ismingiz yoki kompaniya', 'Aloqa maʼlumotingiz', 'Toʻqimachilik', 'Masalan: yuqori energiya ehtiyoji, Toshkentga yaqinlik, temir yoʻl ulanishi'],
+    modalSubmit: 'Maʼlumotlarni yuborish',
+    footerTitle: 'Oʻzbekiston sanoat yer operatsiyalari',
+    footerCenter: 'Operatsiya markazi',
+    footerLocation: 'Toshkent, Oʻzbekiston.',
+    footerSlogan: '“Sanoat investitsiyasida noaniqlikka oʻrin yoʻq.”',
+  },
+} as const;
+
+export default function LandExpertWebsite() {
+  const [modal, setModal] = useState(false);
+  const [lang, setLang] = useState<LangKey>('tr');
+  const c = translations[lang];
+
+  useEffect(() => {
+    const onScroll = () => {
+      document.querySelectorAll('.fade-in').forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight - 100) el.classList.remove('opacity-0', 'translate-y-10');
+      });
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const baseBtn = 'rounded-3xl px-6 py-4 text-sm font-semibold transition duration-200 hover:scale-105';
+  const page = 'min-h-screen bg-slate-950 text-white';
+  const header = 'sticky top-0 z-50 border-b border-white/10 bg-slate-950/92 backdrop-blur-xl';
+  const text = 'text-slate-300';
+  const soft = 'text-slate-400';
+  const title = 'text-white';
+  const card = 'border-white/10 bg-white/5';
+  const box = 'border-white/10 bg-slate-900/70';
+  const alt = 'border-y border-white/10 bg-white/[0.02]';
+  const form = 'border-white/10 bg-slate-900/72';
+  const overlay = 'absolute inset-0 bg-slate-950/80';
+  const formOverlay = 'absolute inset-0 bg-slate-950/82';
+  const badge = 'border-amber-400/25 bg-amber-400/10 text-amber-200';
+  const btn = 'bg-amber-400 text-slate-950 hover:bg-amber-300';
+  const btn2 = 'border-white/15 bg-white/5 text-white hover:border-amber-300/40 hover:bg-white/10';
+  const input = 'border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus:border-amber-300/40';
+  const cardCls = `rounded-[2.5rem] border p-7 transition duration-300 hover:-translate-y-2 ${card}`;
+  const inputCls = `w-full rounded-3xl border px-4 py-3 outline-none ${input}`;
+
+  return (
+    <div className={page}>
+      <header className={header}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 lg:px-8">
+          <a href="#hero" className={`text-xl font-semibold tracking-[0.28em] ${title}`}>LANDEXPERT</a>
+          <nav className="hidden items-center gap-8 md:flex">
+            {c.nav.map((x, i) => (
+              <a key={x} href={['#operasyonlar', '#neden', '#surec', '#iletisim'][i]} className={`text-sm transition hover:text-amber-300 ${text}`}>{x}</a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value as LangKey)}
+              className="rounded-full border border-white/10 bg-white/5 pl-3 pr-1 py-2 text-sm text-white outline-none"
+            >
+              <option value="tr" className="bg-slate-900">Türkçe</option>
+              <option value="uz" className="bg-slate-900">Oʻzbekcha</option>
+              <option value="en" className="bg-slate-900">English</option>
+              <option value="ru" className="bg-slate-900">Русский</option>
+            </select>
+            <button onClick={() => setModal(true)} className={`${baseBtn} rounded-full px-5 py-2.5 border border-amber-400/40 bg-amber-400/10 text-amber-200`}>
+              {c.headerCta}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="hero" className="relative isolate overflow-hidden">
+          <img src={heroImage} alt="Hero" className="absolute inset-0 h-full w-full object-cover" />
+          <div className={overlay} />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.16),transparent_28%)]" />
+          <div className="relative mx-auto grid min-h-[86vh] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:px-8">
+            <div>
+              <div className={`mb-6 inline-flex rounded-full border px-4 py-2 text-xs uppercase tracking-[0.24em] ${badge}`}>
+                {c.heroBadge}
+              </div>
+              <h1 className={`max-w-4xl text-4xl font-semibold leading-tight md:text-6xl ${title}`}>
+                {c.heroTitle1} <span className="text-amber-300">{c.heroHighlight}</span> {c.heroTitle2}
+              </h1>
+              <p className={`mt-6 max-w-2xl text-lg leading-8 md:text-xl ${text}`}>
+                {c.heroText}
+              </p>
+              <div className="mt-10 flex gap-4">
+                <a href="#operasyonlar" className={`${baseBtn} border ${btn2}`}>{c.heroButton}</a>
+              </div>
+            </div>
+
+            <div className={`rounded-[2.5rem] border p-6 backdrop-blur-md ${card}`}>
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.2em] text-amber-200">{c.panelTitle}</p>
+                  <h2 className={`mt-2 text-2xl font-semibold ${title}`}>{c.panelHeading}</h2>
+                </div>
+                <div className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">{c.active}</div>
+              </div>
+              <div className={`space-y-4 text-sm ${text}`}>
+                <div className={`rounded-2xl border p-4 ${box}`}>
+                  <p className={soft}>{c.sectorFit}</p><p className={`mt-1 font-medium ${title}`}>{c.sectorFitValue}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className={`rounded-2xl border p-4 ${box}`}><p className={soft}>{c.energyCheck}</p><p className="mt-1 text-xl font-semibold text-amber-300">MW</p></div>
+                  <div className={`rounded-2xl border p-4 ${box}`}><p className={soft}>{c.gasCapacity}</p><p className="mt-1 text-xl font-semibold text-amber-300">m³</p></div>
+                </div>
+                <div className={`rounded-2xl border p-4 ${box}`}>
+                  <p className={soft}>{c.output}</p><p className={`mt-1 font-medium ${title}`}>{c.outputValue}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="operasyonlar" className="fade-in mx-auto max-w-7xl translate-y-10 px-6 py-24 opacity-0 transition-all duration-700 lg:px-8">
+          <div className="max-w-3xl">
+            <p className="text-sm uppercase tracking-[0.22em] text-amber-300">{c.expertiseTag}</p>
+            <h2 className={`mt-4 text-3xl font-semibold md:text-4xl ${title}`}>{c.expertiseTitle}</h2>
+            <p className={`mt-5 text-lg leading-8 ${soft}`}>{c.expertiseText}</p>
+          </div>
+          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+            {c.cards.map((item: CardItem) => (
+              <div key={item.title} className={cardCls}>
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-400/25 bg-amber-400/10 text-2xl">{item.icon}</div>
+                <h3 className={`text-2xl font-semibold ${title}`}>{item.title}</h3>
+                <p className={`mt-4 text-base leading-7 ${soft}`}>{item.text}</p>
+                <ul className={`mt-6 space-y-3 text-sm ${text}`}>
+                  {item.items.map((i: string) => <li key={i} className="flex gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-amber-300" /><span>{i}</span></li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="neden" className={`fade-in translate-y-10 opacity-0 transition-all duration-700 ${alt}`}>
+          <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+              <div>
+                <p className="text-sm uppercase tracking-[0.22em] text-amber-300">{c.dataTag}</p>
+                <h2 className={`mt-4 text-3xl font-semibold md:text-4xl ${title}`}>{c.dataTitle}</h2>
+                <p className={`mt-5 text-lg leading-8 ${soft}`}>{c.dataText}</p>
+              </div>
+              <div className={`overflow-hidden rounded-[2.5rem] border shadow-xl ${box}`}>
+                <div className="grid grid-cols-2 border-b border-white/10 bg-white/5 px-0 text-sm font-semibold text-slate-300">
+                  <div className="px-6 py-4">{lang === 'en' ? 'Criteria' : lang === 'ru' ? 'Критерий' : lang === 'uz' ? 'Mezon' : 'Kriter'}</div>
+                  <div className="px-6 py-4">LandExpert</div>
+                </div>
+                {c.rows.map(([a, b], i) => (
+                  <div key={a} className={`grid grid-cols-2 ${i < c.rows.length - 1 ? 'border-b border-white/10' : ''}`}>
+                    <div className={`px-6 py-5 font-medium ${title}`}>{a}</div><div className={`px-6 py-5 ${soft}`}>{b}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="surec" className="fade-in mx-auto max-w-7xl translate-y-10 px-6 py-24 opacity-0 transition-all duration-700 lg:px-8">
+          <div className="max-w-3xl">
+            <p className="text-sm uppercase tracking-[0.22em] text-amber-300">{c.processTag}</p>
+            <h2 className={`mt-4 text-3xl font-semibold md:text-4xl ${title}`}>{c.processTitle}</h2>
+          </div>
+          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+            {c.steps.map(([n, title2, text2]) => (
+              <div key={n} className={cardCls}>
+                <div className="absolute right-5 top-5 text-6xl font-semibold text-white/5">{n}</div>
+                <div className="relative">
+                  <div className={`mb-4 inline-flex rounded-full border px-3 py-1 text-xs font-medium tracking-[0.18em] ${badge}`}>{n}</div>
+                  <h3 className={`text-2xl font-semibold ${title}`}>{title2}</h3>
+                  <p className={`mt-4 text-base leading-7 ${soft}`}>{text2}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="form" className="fade-in relative overflow-hidden translate-y-10 border-t border-white/10 opacity-0 transition-all duration-700">
+          <img src={formImage} alt="Form background" className="absolute inset-0 h-full w-full object-cover" />
+          <div className={formOverlay} />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.14),transparent_28%)]" />
+          <div className="relative z-10 mx-auto grid max-w-7xl gap-10 px-6 py-24 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+            <div>
+              <p className="text-sm uppercase tracking-[0.22em] text-amber-300">{c.formTag}</p>
+              <h2 className={`mt-4 text-3xl font-semibold md:text-4xl ${title}`}>{c.formTitle}</h2>
+              <p className={`mt-5 text-lg leading-8 ${soft}`}>{c.formText}</p>
+              <div className={`mt-6 inline-flex rounded-full border px-4 py-2 text-xs font-medium uppercase tracking-[0.18em] ${badge}`}>{c.formBadge}</div>
+            </div>
+            <form className={`relative z-10 rounded-[2.5rem] border p-8 shadow-2xl backdrop-blur-md ${form}`}>
+              <div className="grid gap-5 md:grid-cols-2">
+                <label><span className={`mb-2 block text-sm ${text}`}>{c.formLabels[0]}</span><input type="text" placeholder={c.formPlaceholders[0]} className={inputCls} /></label>
+                <label><span className={`mb-2 block text-sm ${text}`}>{c.formLabels[1]}</span><select className={inputCls} defaultValue={c.sectors[0]}>{c.sectors.map((s: string) => <option key={s}>{s}</option>)}</select></label>
+                <label><span className={`mb-2 block text-sm ${text}`}>{c.formLabels[2]}</span><input type="number" placeholder={c.formPlaceholders[2]} className={inputCls} /></label>
+                <label><span className={`mb-2 block text-sm ${text}`}>{c.formLabels[3]}</span><input type="text" placeholder={c.formPlaceholders[3]} className={inputCls} /></label>
+              </div>
+              <label className="mt-5 block"><span className={`mb-2 block text-sm ${text}`}>{c.formLabels[4]}</span><textarea rows={6} placeholder={c.formPlaceholders[4]} className={inputCls} /></label>
+              <button type="button" onClick={() => setModal(true)} className={`${baseBtn} mt-6 w-full ${btn}`}>{c.submit}</button>
+            </form>
+          </div>
+        </section>
+      </main>
+
+      {modal && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/75 px-4 backdrop-blur-sm" onClick={() => setModal(false)}>
+          <div className="w-full max-w-lg rounded-[2rem] border border-white/10 bg-slate-900 p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-amber-300">{c.modalTag}</p>
+                <h3 className={`text-2xl font-semibold ${title}`}>{c.modalTitle}</h3>
+                <p className={`mt-2 text-sm ${soft}`}>{c.modalText}</p>
+              </div>
+              <button onClick={() => setModal(false)} className={`inline-flex h-10 w-10 items-center justify-center rounded-full border ${card}`}>✕</button>
+            </div>
+            <div className="mt-6 space-y-4">
+              <div><label className={`mb-2 block text-sm ${text}`}>{c.modalLabels[0]}</label><input type="text" placeholder={c.modalPlaceholders[0]} className={inputCls} /></div>
+              <div><label className={`mb-2 block text-sm ${text}`}>{c.modalLabels[1]}</label><input type="text" placeholder={c.modalPlaceholders[1]} className={inputCls} /></div>
+              <div><label className={`mb-2 block text-sm ${text}`}>{c.modalLabels[2]}</label><select className={inputCls} defaultValue={c.sectors[0]}>{c.sectors.map((s: string) => <option key={s}>{s}</option>)}</select></div>
+              <div><label className={`mb-2 block text-sm ${text}`}>{c.modalLabels[3]}</label><textarea rows={4} placeholder={c.modalPlaceholders[3]} className={inputCls} /></div>
+            </div>
+            <button type="button" className={`${baseBtn} mt-5 w-full ${btn}`}>{c.modalSubmit}</button>
+          </div>
+        </div>
+      )}
+
+      <footer id="iletisim" className="border-t border-white/10 bg-slate-950 text-slate-400">
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 text-sm lg:grid-cols-3 lg:px-8">
+          <div><p className={`text-lg font-semibold tracking-[0.22em] ${title}`}>LANDEXPERT</p><p className="mt-3">{c.footerTitle}</p></div>
+          <div><p className={`font-medium ${title}`}>{c.footerCenter}</p><p className="mt-3">{c.footerLocation}</p></div>
+          <div className="lg:text-right"><a href="#" className="inline-flex items-center gap-2 text-amber-300 transition hover:text-amber-200"><span>LinkedIn</span><span>↗</span></a><p className="mt-3 italic text-slate-500">{c.footerSlogan}</p></div>
+        </div>
+      </footer>
+    </div>
+  );
+}
